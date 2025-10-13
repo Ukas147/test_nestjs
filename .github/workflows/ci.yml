@@ -6,8 +6,8 @@ on:
   pull_request:
     branches: [ main, develop ]
   schedule:
-    # Executa análise de segurança diariamente às 2h
-    - cron: '0 2 * * *'
+    # Executa análise de segurança diariamente às 9h
+    - cron: '0 9 * * *'
 
 env:
   NODE_VERSION: '22.x'

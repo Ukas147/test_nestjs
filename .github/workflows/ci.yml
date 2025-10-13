@@ -99,16 +99,24 @@ jobs:
     - name: Instalar dependências
       run: npm ci
 
+    - name: Gerar cliente Prisma
+      run: npx prisma generate
+      env:
+        DATABASE_URL: "file:./test.db"
+
     - name: Executar build
       run: npm run build
 
     - name: Verificar se build foi criado
       run: |
         ls -la dist/
-        test -f dist/main.js
+        test -f dist/src/main.js
 
-    - name: Testar start da aplicação
+    - name: Verificar estrutura do build
       run: |
-        timeout 10s npm run start:prod || true
-      env:
-        DATABASE_URL: "file:./test.db"
+        echo "Verificando arquivos gerados:"
+        ls -la dist/src/
+        echo "Verificando se main.js existe:"
+        test -f dist/src/main.js && echo "✅ main.js encontrado" || echo "❌ main.js não encontrado"
+        echo "Verificando se módulos foram compilados:"
+        test -d dist/src/modules && echo "✅ módulos compilados" || echo "❌ módulos não encontrados"

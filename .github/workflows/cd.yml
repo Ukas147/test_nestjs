@@ -9,8 +9,8 @@ on:
     branches: [ main, develop ]
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  # REGISTRY: ghcr.io  # Comentado - não usando Docker
+  # IMAGE_NAME: ${{ github.repository }}  # Comentado - não usando Docker
   STAGING_URL: ${{ secrets.STAGING_URL }}
   PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
 
@@ -91,7 +91,7 @@ jobs:
     - name: 🟢 Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20.x'
+        node-version: '22.x'
         cache: 'npm'
 
     - name: 📦 Install dependencies

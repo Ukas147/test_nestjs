@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+
+    - name: Configurar Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Instalar dependências
+      run: npm ci
+
+    - name: Configurar banco de dados para testes
+      run: |
+        npx prisma generate
+        npx prisma db push
+      env:
+        DATABASE_URL: "file:./test.db"
+
+    - name: Executar lint
+      run: npm run lint
+
+    - name: Executar testes unitários
+      run: npm run test
+
+    - name: Executar testes com coverage
+      run: npm run test:cov
+
+    - name: Executar build
+      run: npm run build
+
+    - name: Executar testes e2e
+      run: npm run test:e2e
+      env:
+        DATABASE_URL: "file:./test.db"
+
+    - name: Upload coverage para Codecov
+      if: matrix.node-version == '20.x'
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false

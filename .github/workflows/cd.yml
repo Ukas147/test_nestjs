@@ -24,7 +24,7 @@ jobs:
     
     steps:
     - name: 📥 Checkout código
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     # 🐳 DOCKER BUILD - COMENTADO (não necessário para este projeto)
     # - name: 🐳 Set up Docker Buildx
@@ -86,7 +86,7 @@ jobs:
     
     steps:
     - name: 📥 Checkout código
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: 🟢 Setup Node.js
       uses: actions/setup-node@v4
@@ -121,7 +121,7 @@ jobs:
     
     steps:
     - name: 📥 Checkout código
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     # 🐳 DOCKER BUILD - COMENTADO (não necessário para este projeto)
     # - name: 🐳 Set up Docker Buildx
@@ -200,7 +200,7 @@ jobs:
     
     steps:
     - name: 📥 Checkout código
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: 🔄 Automatic rollback
       run: |

@@ -33,9 +33,14 @@ describe('UsersController', () => {
   describe('findAllUsers', () => {
     it('should return an array of users', async () => {
       const mockUsers = [
-        { id: 1, email: 'test@test.com', name: 'Test User', createdAt: new Date() },
+        {
+          id: 1,
+          email: 'test@test.com',
+          name: 'Test User',
+          createdAt: new Date(),
+        },
       ];
-      
+
       jest.spyOn(service, 'findAllUsers').mockResolvedValue(mockUsers);
 
       const result = await controller.findAllUsers();
@@ -45,8 +50,13 @@ describe('UsersController', () => {
 
   describe('findUserById', () => {
     it('should return a user by id', async () => {
-      const mockUser = { id: 1, email: 'test@test.com', name: 'Test User', createdAt: new Date() };
-      
+      const mockUser = {
+        id: 1,
+        email: 'test@test.com',
+        name: 'Test User',
+        createdAt: new Date(),
+      };
+
       jest.spyOn(service, 'findUserById').mockResolvedValue(mockUser);
 
       const result = await controller.findUserById(1);
@@ -56,8 +66,13 @@ describe('UsersController', () => {
 
   describe('createUser', () => {
     it('should create a new user', async () => {
-      const mockUser = { id: 1, email: 'test@test.com', name: 'Test User', createdAt: new Date() };
-      
+      const mockUser = {
+        id: 1,
+        email: 'test@test.com',
+        name: 'Test User',
+        createdAt: new Date(),
+      };
+
       jest.spyOn(service, 'createUser').mockResolvedValue(mockUser);
 
       const result = await controller.createUser(mockUser);
@@ -67,8 +82,13 @@ describe('UsersController', () => {
 
   describe('deleteUser', () => {
     it('should delete a user', async () => {
-      const mockUser = { id: 1, email: 'test@test.com', name: 'Test User', createdAt: new Date() };
-      
+      const mockUser = {
+        id: 1,
+        email: 'test@test.com',
+        name: 'Test User',
+        createdAt: new Date(),
+      };
+
       jest.spyOn(service, 'deleteUser').mockResolvedValue(mockUser);
 
       const result = await controller.deleteUser(1);

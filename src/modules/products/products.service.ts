@@ -5,7 +5,7 @@ import { Product } from 'generated/prisma';
 @Injectable()
 export class ProductsService {
   constructor(private productsRepository: ProductsRepository) {}
-  
+
   async findAllProducts() {
     return this.productsRepository.findAllProducts();
   }

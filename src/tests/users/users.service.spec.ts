@@ -33,7 +33,12 @@ describe('UsersService', () => {
   describe('findAllUsers', () => {
     it('should return an array of users', async () => {
       const mockUsers = [
-        { id: 1, email: 'test@test.com', name: 'Test User', createdAt: new Date() },
+        {
+          id: 1,
+          email: 'test@test.com',
+          name: 'Test User',
+          createdAt: new Date(),
+        },
       ];
 
       jest.spyOn(repository, 'findAllUsers').mockResolvedValue(mockUsers);
@@ -45,7 +50,12 @@ describe('UsersService', () => {
 
   describe('findUserById', () => {
     it('should return a user by id', async () => {
-      const mockUser = { id: 1, email: 'test@test.com', name: 'Test User', createdAt: new Date() };
+      const mockUser = {
+        id: 1,
+        email: 'test@test.com',
+        name: 'Test User',
+        createdAt: new Date(),
+      };
 
       jest.spyOn(repository, 'findUserById').mockResolvedValue(mockUser);
 
@@ -56,19 +66,33 @@ describe('UsersService', () => {
 
   describe('createUser', () => {
     it('should create a user', async () => {
-      const mockUser = { id: 1, email: 'test@test.com', name: 'Test User', createdAt: new Date() };
-      
+      const mockUser = {
+        id: 1,
+        email: 'test@test.com',
+        name: 'Test User',
+        createdAt: new Date(),
+      };
+
       jest.spyOn(repository, 'createUser').mockResolvedValue(mockUser);
-      
-    })
-  })
+
+      const result = await service.createUser(mockUser);
+      expect(result).toEqual(mockUser);
+    });
+  });
 
   describe('deleteUser', () => {
     it('should delete a user', async () => {
-      const mockUser = { id: 1, email: 'test@test.com', name: 'Test User', createdAt: new Date() };
-      
+      const mockUser = {
+        id: 1,
+        email: 'test@test.com',
+        name: 'Test User',
+        createdAt: new Date(),
+      };
+
       jest.spyOn(repository, 'deleteUser').mockResolvedValue(mockUser);
-      
-    })
-  })
+
+      const result = await service.deleteUser(1);
+      expect(result).toEqual(mockUser);
+    });
+  });
 });

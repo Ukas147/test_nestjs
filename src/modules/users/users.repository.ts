@@ -12,19 +12,19 @@ export class UsersRepository {
 
   async findUserById(id: number): Promise<User | null> {
     return this.prisma.user.findUnique({
-      where: { id }
+      where: { id },
     });
   }
 
   async createUser(user: User): Promise<User> {
     return this.prisma.user.create({
-      data: user
+      data: user,
     });
   }
 
   async deleteUser(id: number): Promise<User> {
     return await this.prisma.user.delete({
-      where: { id }
+      where: { id },
     });
   }
 }

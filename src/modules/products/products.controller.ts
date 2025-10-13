@@ -22,7 +22,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  softDeleteProduct(@Param('id') id:number) {
+  softDeleteProduct(@Param('id') id: number) {
     return this.productsService.softDeleteProduct(+id);
   }
 }

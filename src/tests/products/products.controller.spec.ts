@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {ProductsController} from '../../modules/products/products.controller';
-import {ProductsService} from '../../modules/products/products.service';
+import { ProductsController } from '../../modules/products/products.controller';
+import { ProductsService } from '../../modules/products/products.service';
 
 describe('ProductsController', () => {
   let controller: ProductsController;
@@ -17,9 +17,9 @@ describe('ProductsController', () => {
             findProductById: jest.fn(),
             createProduct: jest.fn(),
             softDeleteProduct: jest.fn(),
-          }
-        }
-      ]
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<ProductsController>(ProductsController);
@@ -29,39 +29,78 @@ describe('ProductsController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
-  
+
   describe('findAllProducts', () => {
     it('should return an array of products', async () => {
       const mockProducts = [
-        { id: 1, name: 'Product 1', priceCents: 100, quantity: 10, isActive: true, createdAt: new Date() },
+        {
+          id: 1,
+          name: 'Product 1',
+          priceCents: 100,
+          quantity: 10,
+          isActive: true,
+          createdAt: new Date(),
+        },
       ];
-    })
-  })
+
+      jest.spyOn(service, 'findAllProducts').mockResolvedValue(mockProducts);
+
+      const result = await controller.findAllProducts();
+      expect(result).toEqual(mockProducts);
+    });
+  });
 
   describe('findProductById', () => {
     it('should return a product by id', async () => {
-      const mockProduct = { id: 1, name: 'Product 1', priceCents: 100, quantity: 10, isActive: true, createdAt: new Date() };
-      
+      const mockProduct = {
+        id: 1,
+        name: 'Product 1',
+        priceCents: 100,
+        quantity: 10,
+        isActive: true,
+        createdAt: new Date(),
+      };
+
       jest.spyOn(service, 'findProductById').mockResolvedValue(mockProduct);
-      
-    })
-  })
+
+      const result = await controller.findProductById(1);
+      expect(result).toEqual(mockProduct);
+    });
+  });
 
   describe('createProduct', () => {
     it('should create a product', async () => {
-      const mockProduct = { id: 1, name: 'Product 1', priceCents: 100, quantity: 10, isActive: true, createdAt: new Date() };
-      
+      const mockProduct = {
+        id: 1,
+        name: 'Product 1',
+        priceCents: 100,
+        quantity: 10,
+        isActive: true,
+        createdAt: new Date(),
+      };
+
       jest.spyOn(service, 'createProduct').mockResolvedValue(mockProduct);
-      
-    })
-  })
+
+      const result = await controller.createProduct(mockProduct);
+      expect(result).toEqual(mockProduct);
+    });
+  });
 
   describe('softDeleteProduct', () => {
     it('should soft delete a product', async () => {
-      const mockProduct = { id: 1, name: 'Product 1', priceCents: 100, quantity: 10, isActive: true, createdAt: new Date() };
-      
+      const mockProduct = {
+        id: 1,
+        name: 'Product 1',
+        priceCents: 100,
+        quantity: 10,
+        isActive: true,
+        createdAt: new Date(),
+      };
+
       jest.spyOn(service, 'softDeleteProduct').mockResolvedValue(mockProduct);
-      
-    })
-  })
+
+      const result = await controller.softDeleteProduct(1);
+      expect(result).toEqual(mockProduct);
+    });
+  });
 });

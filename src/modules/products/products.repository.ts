@@ -24,7 +24,7 @@ export class ProductsRepository {
   async softDeleteProduct(id: number): Promise<Product> {
     return await this.prisma.product.update({
       where: { id },
-      data: { isActive: false },
+      data: { updatedAt: new Date(), deletedAt: new Date() },
     });
   }
 }

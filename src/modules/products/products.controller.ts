@@ -12,7 +12,7 @@ export class ProductsController {
   }
 
   @Get(':id')
-  findProductById(@Param('id') id: number) {
+  findProductById(@Param('id') id: string) {
     return this.productsService.findProductById(+id);
   }
 
@@ -22,7 +22,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  softDeleteProduct(@Param('id') id: number) {
+  softDeleteProduct(@Param('id') id: string) {
     return this.productsService.softDeleteProduct(+id);
   }
 }

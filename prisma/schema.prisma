@@ -19,6 +19,8 @@ model User {
   email     String   @unique
   name      String?
   createdAt DateTime @default(now())
+  updatedAt DateTime?
+  deletedAt DateTime?
 }
 
 model Product {
@@ -28,4 +30,55 @@ model Product {
   quantity  Int?  @default(0)
   isActive  Boolean @default(true)
   createdAt DateTime @default(now())
+  updatedAt DateTime?
+  deletedAt DateTime?
+}
+
+model Car {
+  id        Int     @id @default(autoincrement())
+  name      String
+  mark      String
+  age       Int?    @default(0000)
+  color     String? @default("Black")
+  licensePlate  String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime?
+  deletedAt DateTime?
+}
+
+model Payment {
+  id        Int     @id @default(autoincrement())
+  method    String
+  value     Int
+  status    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  deletedAt DateTime?
+}
+
+model Vehicle {
+  id                Int      @id @default(autoincrement())
+  brand             String
+  model             String
+  year              Int
+  color             String
+  licensePlate      String
+  vin               String
+  mileage           Float
+  fuelType          String
+  transmission      String
+  enginePower       Float
+  numberOfDoors     Int
+  weightKg          Float
+  heightMeters      Float
+  widthMeters       Float
+  lengthMeters      Float
+  isElectric        Boolean
+  registrationDate  DateTime
+  lastServiceDate   DateTime?
+  isAvailable       Boolean   @default(true)
+  description       String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
 }

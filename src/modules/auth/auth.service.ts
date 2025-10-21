@@ -1,23 +1,19 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from '../../shared/prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
-
-  // Simulação de banco de dados
-  private users = [
-    {
-      id: 1,
-      email: 'admin@test.com',
-      password: '$2a$10$rQZ8KjJ8KjJ8KjJ8KjJ8K.8KjJ8KjJ8KjJ8KjJ8KjJ8KjJ8KjJ8K', // '123456'
-      name: 'Admin',
-    },
-  ];
+  constructor(
+    private jwtService: JwtService,
+    private prisma: PrismaService,
+  ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = this.users.find(u => u.email === email);
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
     
     if (user && await bcrypt.compare(password, user.password)) {
       const { password, ...result } = user;
@@ -41,16 +37,22 @@ export class AuthService {
   async register(email: string, password: string, name: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    const newUser = {
-      id: this.users.length + 1,
-      email,
-      password: hashedPassword,
-      name,
-    };
-    
-    this.users.push(newUser);
-    
-    const { password: _, ...result } = newUser;
-    return result;
+    try {
+      const newUser = await this.prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name,
+        },
+      });
+      
+      const { password: _, ...result } = newUser;
+      return result;
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Email já existe');
+      }
+      throw error;
+    }
   }
 }

@@ -116,7 +116,7 @@ jobs:
         DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
 
     - name: 📊 Upload coverage reports
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: daily-coverage-${{ matrix.node-version }}-${{ matrix.test-type }}
         path: coverage/

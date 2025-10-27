@@ -80,7 +80,7 @@ jobs:
         fi
 
     - name: 🚨 Upload security results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       if: always()
       with:
         name: security-audit-results
@@ -135,7 +135,7 @@ jobs:
         DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
 
     - name: 📊 Upload coverage reports
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: coverage-report-${{ matrix.node-version }}-${{ matrix.test-type }}
         path: coverage/
@@ -208,7 +208,7 @@ jobs:
         echo "📦 Artefato criado: build-artifact.tar.gz"
 
     - name: 🚀 Upload build artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: build-artifact-${{ steps.hash.outputs.hash }}
         path: build-artifact.tar.gz

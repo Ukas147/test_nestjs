@@ -236,7 +236,7 @@ jobs:
   #       password: ${{ secrets.GITHUB_TOKEN }}
 
   #   - name: 📦 Download build artifact
-  #     uses: actions/download-artifact@v4
+  #     uses: actions/download-artifact@v6
   #     with:
   #       name: build-artifact-${{ needs.build.outputs.build-hash }}
   #       path: ./dist
@@ -274,7 +274,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: 📊 Download coverage reports
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v6
       with:
         pattern: coverage-report-*
         path: coverage-reports/

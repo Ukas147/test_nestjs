@@ -1,94 +1,94 @@
-name: 🔄 Emergency Rollback
+# name: 🔄 Emergency Rollback
 
-on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to rollback'
-        required: true
-        default: 'staging'
-        type: choice
-        options:
-          - staging
-          - production
-      version:
-        description: 'Version to rollback to (leave empty for previous)'
-        required: false
-        type: string
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       environment:
+#         description: 'Environment to rollback'
+#         required: true
+#         default: 'staging'
+#         type: choice
+#         options:
+#           - staging
+#           - production
+#       version:
+#         description: 'Version to rollback to (leave empty for previous)'
+#         required: false
+#         type: string
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+# env:
+#   REGISTRY: ghcr.io
+#   IMAGE_NAME: ${{ github.repository }}
 
-jobs:
-  rollback:
-    name: 🔄 Emergency Rollback
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+# jobs:
+#   rollback:
+#     name: 🔄 Emergency Rollback
+#     runs-on: ubuntu-latest
+#     environment: ${{ inputs.environment }}
     
-    steps:
-    - name: 📥 Checkout código
-      uses: actions/checkout@v4
+#     steps:
+#     - name: 📥 Checkout código
+#       uses: actions/checkout@v4
 
-    - name: 🔍 Validate rollback request
-      run: |
-        echo "🔍 Validating rollback request..."
-        echo "🌍 Environment: ${{ inputs.environment }}"
-        echo "📦 Version: ${{ inputs.version || 'previous' }}"
+#     - name: 🔍 Validate rollback request
+#       run: |
+#         echo "🔍 Validating rollback request..."
+#         echo "🌍 Environment: ${{ inputs.environment }}"
+#         echo "📦 Version: ${{ inputs.version || 'previous' }}"
         
-        if [ "${{ inputs.environment }}" = "production" ]; then
-          echo "⚠️ PRODUCTION ROLLBACK - This will affect live users!"
-        fi
+#         if [ "${{ inputs.environment }}" = "production" ]; then
+#           echo "⚠️ PRODUCTION ROLLBACK - This will affect live users!"
+#         fi
 
-    - name: 🔄 Execute rollback
-      run: |
-        echo "🔄 Executing rollback..."
+#     - name: 🔄 Execute rollback
+#       run: |
+#         echo "🔄 Executing rollback..."
         
-        if [ "${{ inputs.environment }}" = "staging" ]; then
-          echo "🧪 Rolling back staging environment..."
-          # Comandos reais de rollback para staging
-          # Exemplo: kubectl rollout undo deployment/staging-app
-        else
-          echo "🚀 Rolling back production environment..."
-          # Comandos reais de rollback para produção
-          # Exemplo: kubectl rollout undo deployment/prod-app
-        fi
+#         if [ "${{ inputs.environment }}" = "staging" ]; then
+#           echo "🧪 Rolling back staging environment..."
+#           # Comandos reais de rollback para staging
+#           # Exemplo: kubectl rollout undo deployment/staging-app
+#         else
+#           echo "🚀 Rolling back production environment..."
+#           # Comandos reais de rollback para produção
+#           # Exemplo: kubectl rollout undo deployment/prod-app
+#         fi
         
-        echo "✅ Rollback completed"
+#         echo "✅ Rollback completed"
 
-    - name: 🏥 Health check after rollback
-      run: |
-        echo "🏥 Performing health check after rollback..."
-        sleep 10
-        echo "✅ Health check passed"
+#     - name: 🏥 Health check after rollback
+#       run: |
+#         echo "🏥 Performing health check after rollback..."
+#         sleep 10
+#         echo "✅ Health check passed"
 
-    - name: 📢 Notify rollback completion
-      run: |
-        echo "📢 Rollback Notification:"
-        echo "✅ Rollback completed successfully"
-        echo "🌍 Environment: ${{ inputs.environment }}"
-        echo "📦 Version: ${{ inputs.version || 'previous' }}"
-        echo "⏰ Time: $(date)"
+#     - name: 📢 Notify rollback completion
+#       run: |
+#         echo "📢 Rollback Notification:"
+#         echo "✅ Rollback completed successfully"
+#         echo "🌍 Environment: ${{ inputs.environment }}"
+#         echo "📦 Version: ${{ inputs.version || 'previous' }}"
+#         echo "⏰ Time: $(date)"
 
-  # 📊 Post-Rollback Monitoring
-  post-rollback-monitoring:
-    name: 📊 Post-Rollback Monitoring
-    runs-on: ubuntu-latest
-    needs: rollback
+#   # 📊 Post-Rollback Monitoring
+#   post-rollback-monitoring:
+#     name: 📊 Post-Rollback Monitoring
+#     runs-on: ubuntu-latest
+#     needs: rollback
     
-    steps:
-    - name: 📊 Setup enhanced monitoring
-      run: |
-        echo "📊 Setting up enhanced monitoring after rollback..."
-        echo "🔍 Increased health check frequency"
-        echo "📈 Performance monitoring active"
-        echo "🚨 Alert thresholds adjusted"
+#     steps:
+#     - name: 📊 Setup enhanced monitoring
+#       run: |
+#         echo "📊 Setting up enhanced monitoring after rollback..."
+#         echo "🔍 Increased health check frequency"
+#         echo "📈 Performance monitoring active"
+#         echo "🚨 Alert thresholds adjusted"
 
-    - name: 📈 Generate rollback report
-      run: |
-        echo "📈 Rollback Report:"
-        echo "✅ Status: Completed"
-        echo "🌍 Environment: ${{ inputs.environment }}"
-        echo "📦 Version: ${{ inputs.version || 'previous' }}"
-        echo "⏰ Rollback time: $(date)"
-        echo "🔍 Monitoring: Active"
+#     - name: 📈 Generate rollback report
+#       run: |
+#         echo "📈 Rollback Report:"
+#         echo "✅ Status: Completed"
+#         echo "🌍 Environment: ${{ inputs.environment }}"
+#         echo "📦 Version: ${{ inputs.version || 'previous' }}"
+#         echo "⏰ Rollback time: $(date)"
+#         echo "🔍 Monitoring: Active"

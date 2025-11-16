@@ -1,56 +1,56 @@
-name: 🧪 Test CD Trigger
+# name: 🧪 Test CD Trigger
 
-on:
-  workflow_dispatch:
-    inputs:
-      test-branch:
-        description: 'Branch to test'
-        required: true
-        default: 'develop'
-        type: choice
-        options:
-          - main
-          - develop
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       test-branch:
+#         description: 'Branch to test'
+#         required: true
+#         default: 'develop'
+#         type: choice
+#         options:
+#           - main
+#           - develop
 
-jobs:
-  test-cd-trigger:
-    name: 🧪 Test CD Trigger
-    runs-on: ubuntu-latest
+# jobs:
+#   test-cd-trigger:
+#     name: 🧪 Test CD Trigger
+#     runs-on: ubuntu-latest
     
-    steps:
-    - name: 📥 Checkout código
-      uses: actions/checkout@v4
+#     steps:
+#     - name: 📥 Checkout código
+#       uses: actions/checkout@v4
 
-    - name: 🔍 Check CD conditions
-      run: |
-        echo "🔍 Verificando condições do CD..."
-        echo "📋 Branch atual: ${{ github.ref_name }}"
-        echo "📋 Branch testada: ${{ inputs.test-branch }}"
-        echo "📋 Event: ${{ github.event_name }}"
-        echo "📋 Workflow: ${{ github.workflow }}"
+#     - name: 🔍 Check CD conditions
+#       run: |
+#         echo "🔍 Verificando condições do CD..."
+#         echo "📋 Branch atual: ${{ github.ref_name }}"
+#         echo "📋 Branch testada: ${{ inputs.test-branch }}"
+#         echo "📋 Event: ${{ github.event_name }}"
+#         echo "📋 Workflow: ${{ github.workflow }}"
         
-        if [ "${{ github.ref_name }}" = "${{ inputs.test-branch }}" ]; then
-          echo "✅ Branch correta para CD"
-        else
-          echo "❌ Branch incorreta para CD"
-        fi
+#         if [ "${{ github.ref_name }}" = "${{ inputs.test-branch }}" ]; then
+#           echo "✅ Branch correta para CD"
+#         else
+#           echo "❌ Branch incorreta para CD"
+#         fi
 
-    - name: 🚀 Simulate CD execution
-      run: |
-        echo "🚀 Simulando execução do CD..."
-        echo "📦 Deploy para staging..."
-        sleep 2
-        echo "✅ Staging deploy simulado"
-        echo "🧪 Integration tests..."
-        sleep 2
-        echo "✅ Integration tests simulados"
-        echo "🚀 Deploy para produção..."
-        sleep 2
-        echo "✅ Production deploy simulado"
+#     - name: 🚀 Simulate CD execution
+#       run: |
+#         echo "🚀 Simulando execução do CD..."
+#         echo "📦 Deploy para staging..."
+#         sleep 2
+#         echo "✅ Staging deploy simulado"
+#         echo "🧪 Integration tests..."
+#         sleep 2
+#         echo "✅ Integration tests simulados"
+#         echo "🚀 Deploy para produção..."
+#         sleep 2
+#         echo "✅ Production deploy simulado"
 
-    - name: 📊 CD Status
-      run: |
-        echo "📊 Status do CD:"
-        echo "✅ CD funcionaria corretamente"
-        echo "🔍 Verifique se o workflow principal tem o nome correto"
-        echo "📋 Nome esperado: '🚀 Enterprise CI/CD Pipeline'"
+#     - name: 📊 CD Status
+#       run: |
+#         echo "📊 Status do CD:"
+#         echo "✅ CD funcionaria corretamente"
+#         echo "🔍 Verifique se o workflow principal tem o nome correto"
+#         echo "📋 Nome esperado: '🚀 Enterprise CI/CD Pipeline'"

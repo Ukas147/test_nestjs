@@ -1,37 +1,37 @@
-version: 2
-updates:
-  # Atualiza dependências do npm
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "daily"
-      time: "09:00"
-    open-pull-requests-limit: 10
-    reviewers:
-      - "ukas147"
-    assignees:
-      - "ukas147"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "javascript"
+# version: 2
+# updates:
+#   # Atualiza dependências do npm
+#   - package-ecosystem: "npm"
+#     directory: "/"
+#     schedule:
+#       interval: "daily"
+#       time: "09:00"
+#     open-pull-requests-limit: 10
+#     reviewers:
+#       - "ukas147"
+#     assignees:
+#       - "ukas147"
+#     commit-message:
+#       prefix: "chore"
+#       include: "scope"
+#     labels:
+#       - "dependencies"
+#       - "javascript"
 
-  # Atualiza GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "daily"
-      time: "09:00"
-    open-pull-requests-limit: 5
-    reviewers:
-      - "ukas147"
-    assignees:
-      - "ukas147"
-    commit-message:
-      prefix: "ci"
-      include: "scope"
-    labels:
-      - "github-actions"
-      - "ci"
+#   # Atualiza GitHub Actions
+#   - package-ecosystem: "github-actions"
+#     directory: "/"
+#     schedule:
+#       interval: "daily"
+#       time: "09:00"
+#     open-pull-requests-limit: 5
+#     reviewers:
+#       - "ukas147"
+#     assignees:
+#       - "ukas147"
+#     commit-message:
+#       prefix: "ci"
+#       include: "scope"
+#     labels:
+#       - "github-actions"
+#       - "ci"

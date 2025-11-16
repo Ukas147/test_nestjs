@@ -1,193 +1,193 @@
-name: 🧪 Daily Complete Tests
+# name: 🧪 Daily Complete Tests
 
-on:
-  schedule:
-    # Executa testes completos diários às 9h da manhã
-    - cron: '0 9 * * *'
-  workflow_dispatch:
-    inputs:
-      test-type:
-        description: 'Tipo de teste'
-        required: true
-        default: 'complete'
-        type: choice
-        options:
-          - complete
-          - quick
-          - security-only
+# on:
+#   schedule:
+#     # Executa testes completos diários às 9h da manhã
+#     - cron: '0 9 * * *'
+#   workflow_dispatch:
+#     inputs:
+#       test-type:
+#         description: 'Tipo de teste'
+#         required: true
+#         default: 'complete'
+#         type: choice
+#         options:
+#           - complete
+#           - quick
+#           - security-only
 
-env:
-  NODE_VERSION: '22.x'
+# env:
+#   NODE_VERSION: '22.x'
 
-jobs:
-  # 🔍 Análise de Qualidade e Segurança Diária
-  daily-quality-security:
-    name: 🔍 Daily Quality & Security
-    runs-on: ubuntu-latest
-    outputs:
-      quality-status: ${{ steps.quality-check.outcome }}
-      security-status: ${{ steps.security-check.outcome }}
+# jobs:
+#   # 🔍 Análise de Qualidade e Segurança Diária
+#   daily-quality-security:
+#     name: 🔍 Daily Quality & Security
+#     runs-on: ubuntu-latest
+#     outputs:
+#       quality-status: ${{ steps.quality-check.outcome }}
+#       security-status: ${{ steps.security-check.outcome }}
     
-    steps:
-    - name: 📥 Checkout código
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+#     steps:
+#     - name: 📥 Checkout código
+#       uses: actions/checkout@v4
+#       with:
+#         fetch-depth: 0
 
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: package-lock.json
+#     - name: 🟢 Setup Node.js
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: ${{ env.NODE_VERSION }}
+#         cache: 'npm'
+#         cache-dependency-path: package-lock.json
 
-    - name: 📦 Install dependencies
-      run: npm ci --prefer-offline --no-audit
+#     - name: 📦 Install dependencies
+#       run: npm ci --prefer-offline --no-audit
 
-    - name: 🔒 Security audit
-      id: security-check
-      run: |
-        echo "🔍 Verificação diária de segurança..."
-        npm audit --audit-level=moderate --json > audit-results.json || true
-        npm audit --audit-level=moderate || echo "⚠️ Vulnerabilidades encontradas"
-      continue-on-error: true
+#     - name: 🔒 Security audit
+#       id: security-check
+#       run: |
+#         echo "🔍 Verificação diária de segurança..."
+#         npm audit --audit-level=moderate --json > audit-results.json || true
+#         npm audit --audit-level=moderate || echo "⚠️ Vulnerabilidades encontradas"
+#       continue-on-error: true
 
-    - name: 🧹 Code quality analysis
-      id: quality-check
-      run: |
-        echo "🔍 Análise diária de qualidade..."
-        npm run lint
-        npm run format -- --check
-        npx tsc --noEmit
-        echo "✅ Análise de qualidade concluída"
+#     - name: 🧹 Code quality analysis
+#       id: quality-check
+#       run: |
+#         echo "🔍 Análise diária de qualidade..."
+#         npm run lint
+#         npm run format -- --check
+#         npx tsc --noEmit
+#         echo "✅ Análise de qualidade concluída"
 
-    - name: 📊 Dependency analysis
-      run: |
-        echo "📊 Análise diária de dependências..."
-        npx npm-check-updates --format group
-        echo "📈 Dependências desatualizadas:"
-        npx outdated || echo "✅ Todas as dependências estão atualizadas"
+#     - name: 📊 Dependency analysis
+#       run: |
+#         echo "📊 Análise diária de dependências..."
+#         npx npm-check-updates --format group
+#         echo "📈 Dependências desatualizadas:"
+#         npx outdated || echo "✅ Todas as dependências estão atualizadas"
 
-  # 🧪 Testes Completos Diários
-  daily-tests:
-    name: 🧪 Daily Complete Tests
-    runs-on: ubuntu-latest
-    needs: daily-quality-security
-    if: needs.daily-quality-security.outputs.quality-status == 'success'
+#   # 🧪 Testes Completos Diários
+#   daily-tests:
+#     name: 🧪 Daily Complete Tests
+#     runs-on: ubuntu-latest
+#     needs: daily-quality-security
+#     if: needs.daily-quality-security.outputs.quality-status == 'success'
     
-    strategy:
-      matrix:
-        node-version: [18.x, 22.x]
-        test-type: [unit, integration]
-      fail-fast: false
+#     strategy:
+#       matrix:
+#         node-version: [18.x, 22.x]
+#         test-type: [unit, integration]
+#       fail-fast: false
 
-    steps:
-    - name: 📥 Checkout código
-      uses: actions/checkout@v4
+#     steps:
+#     - name: 📥 Checkout código
+#       uses: actions/checkout@v4
 
-    - name: 🟢 Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+#     - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: ${{ matrix.node-version }}
+#         cache: 'npm'
 
-    - name: 📦 Install dependencies
-      run: npm ci --prefer-offline
+#     - name: 📦 Install dependencies
+#       run: npm ci --prefer-offline
 
-    - name: 🗄️ Setup test database
-      run: |
-        npx prisma generate
-        npx prisma db push
-      env:
-        DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
+#     - name: 🗄️ Setup test database
+#       run: |
+#         npx prisma generate
+#         npx prisma db push
+#       env:
+#         DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
 
-    - name: 🧪 Run unit tests
-      if: matrix.test-type == 'unit'
-      run: |
-        npm run test -- --coverage --maxWorkers=2
-      env:
-        DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
+#     - name: 🧪 Run unit tests
+#       if: matrix.test-type == 'unit'
+#       run: |
+#         npm run test -- --coverage --maxWorkers=2
+#       env:
+#         DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
 
-    - name: 🧪 Run integration tests
-      if: matrix.test-type == 'integration'
-      run: |
-        npm run test:e2e -- --coverage
-      env:
-        DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
+#     - name: 🧪 Run integration tests
+#       if: matrix.test-type == 'integration'
+#       run: |
+#         npm run test:e2e -- --coverage
+#       env:
+#         DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
 
-    - name: 📊 Upload coverage reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: daily-coverage-${{ matrix.node-version }}-${{ matrix.test-type }}
-        path: coverage/
-        retention-days: 7
+#     - name: 📊 Upload coverage reports
+#       uses: actions/upload-artifact@v4
+#       with:
+#         name: daily-coverage-${{ matrix.node-version }}-${{ matrix.test-type }}
+#         path: coverage/
+#         retention-days: 7
 
-  # 🏗️ Build e Validação Diária
-  daily-build:
-    name: 🏗️ Daily Build & Validation
-    runs-on: ubuntu-latest
-    needs: [daily-quality-security, daily-tests]
-    if: needs.daily-quality-security.outputs.quality-status == 'success'
+#   # 🏗️ Build e Validação Diária
+#   daily-build:
+#     name: 🏗️ Daily Build & Validation
+#     runs-on: ubuntu-latest
+#     needs: [daily-quality-security, daily-tests]
+#     if: needs.daily-quality-security.outputs.quality-status == 'success'
     
-    steps:
-    - name: 📥 Checkout código
-      uses: actions/checkout@v4
+#     steps:
+#     - name: 📥 Checkout código
+#       uses: actions/checkout@v4
 
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
+#     - name: 🟢 Setup Node.js
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: ${{ env.NODE_VERSION }}
+#         cache: 'npm'
 
-    - name: 📦 Install dependencies
-      run: npm ci --prefer-offline
+#     - name: 📦 Install dependencies
+#       run: npm ci --prefer-offline
 
-    - name: 🔧 Generate Prisma client
-      run: npx prisma generate
-      env:
-        DATABASE_URL: "file:./build-test.db"
+#     - name: 🔧 Generate Prisma client
+#       run: npx prisma generate
+#       env:
+#         DATABASE_URL: "file:./build-test.db"
 
-    - name: 🏗️ Build application
-      run: |
-        echo "🏗️ Build diário..."
-        npm run build
-        echo "✅ Build diário concluído"
+#     - name: 🏗️ Build application
+#       run: |
+#         echo "🏗️ Build diário..."
+#         npm run build
+#         echo "✅ Build diário concluído"
 
-    - name: 📋 Validate build artifacts
-      run: |
-        echo "📋 Validando artefatos do build..."
-        test -f dist/src/main.js && echo "✅ main.js encontrado" || exit 1
-        test -d dist/src/modules && echo "✅ módulos compilados" || exit 1
-        test -d dist/src/shared && echo "✅ shared compilado" || exit 1
+#     - name: 📋 Validate build artifacts
+#       run: |
+#         echo "📋 Validando artefatos do build..."
+#         test -f dist/src/main.js && echo "✅ main.js encontrado" || exit 1
+#         test -d dist/src/modules && echo "✅ módulos compilados" || exit 1
+#         test -d dist/src/shared && echo "✅ shared compilado" || exit 1
         
-        echo "📊 Estatísticas do build diário:"
-        find dist/ -name "*.js" | wc -l | xargs echo "Arquivos JS:"
-        du -sh dist/ | xargs echo "Tamanho total:"
+#         echo "📊 Estatísticas do build diário:"
+#         find dist/ -name "*.js" | wc -l | xargs echo "Arquivos JS:"
+#         du -sh dist/ | xargs echo "Tamanho total:"
 
-  # 📊 Relatório Diário Completo
-  daily-report:
-    name: 📊 Daily Complete Report
-    runs-on: ubuntu-latest
-    needs: [daily-quality-security, daily-tests, daily-build]
-    if: always()
+#   # 📊 Relatório Diário Completo
+#   daily-report:
+#     name: 📊 Daily Complete Report
+#     runs-on: ubuntu-latest
+#     needs: [daily-quality-security, daily-tests, daily-build]
+#     if: always()
     
-    steps:
-    - name: 📊 Generate comprehensive daily report
-      run: |
-        echo "📊 RELATÓRIO DIÁRIO COMPLETO - $(date)"
-        echo "=========================================="
-        echo "🔍 Qualidade: ${{ needs.daily-quality-security.outputs.quality-status }}"
-        echo "🛡️ Segurança: ${{ needs.daily-quality-security.outputs.security-status }}"
-        echo "🧪 Testes: ${{ needs.daily-tests.result }}"
-        echo "🏗️ Build: ${{ needs.daily-build.result }}"
-        echo ""
-        echo "📈 Status Geral:"
-        if [ "${{ needs.daily-quality-security.outputs.quality-status }}" = "success" ] && [ "${{ needs.daily-tests.result }}" = "success" ] && [ "${{ needs.daily-build.result }}" = "success" ]; then
-          echo "✅ PROJETO SAUDÁVEL"
-        else
-          echo "❌ PROJETO COM PROBLEMAS"
-        fi
-        echo ""
-        echo "⏰ Executado em: $(date)"
-        echo "🕘 Horário: 9h da manhã"
-        echo "📅 Frequência: Diária"
+#     steps:
+#     - name: 📊 Generate comprehensive daily report
+#       run: |
+#         echo "📊 RELATÓRIO DIÁRIO COMPLETO - $(date)"
+#         echo "=========================================="
+#         echo "🔍 Qualidade: ${{ needs.daily-quality-security.outputs.quality-status }}"
+#         echo "🛡️ Segurança: ${{ needs.daily-quality-security.outputs.security-status }}"
+#         echo "🧪 Testes: ${{ needs.daily-tests.result }}"
+#         echo "🏗️ Build: ${{ needs.daily-build.result }}"
+#         echo ""
+#         echo "📈 Status Geral:"
+#         if [ "${{ needs.daily-quality-security.outputs.quality-status }}" = "success" ] && [ "${{ needs.daily-tests.result }}" = "success" ] && [ "${{ needs.daily-build.result }}" = "success" ]; then
+#           echo "✅ PROJETO SAUDÁVEL"
+#         else
+#           echo "❌ PROJETO COM PROBLEMAS"
+#         fi
+#         echo ""
+#         echo "⏰ Executado em: $(date)"
+#         echo "🕘 Horário: 9h da manhã"
+#         echo "📅 Frequência: Diária"

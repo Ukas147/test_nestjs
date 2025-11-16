@@ -1,318 +1,318 @@
-name: 🚀 Enterprise CI/CD Pipeline
+# name: 🚀 Enterprise CI/CD Pipeline
 
-on:
-  push:
-    branches: [ main, develop, 'feature/*', 'hotfix/*' ]
-  pull_request:
-    branches: [ main, develop ]
-  schedule:
-    # Executa análise de segurança diariamente às 9h
-    - cron: '0 9 * * *'
+# on:
+#   push:
+#     branches: [ main, develop, 'feature/*', 'hotfix/*' ]
+#   pull_request:
+#     branches: [ main, develop ]
+#   schedule:
+#     # Executa análise de segurança diariamente às 9h
+#     - cron: '0 9 * * *'
 
-env:
-  NODE_VERSION: '22.x'
-  # REGISTRY: ghcr.io  # Comentado - não usando Docker
-  # IMAGE_NAME: ${{ github.repository }}  # Comentado - não usando Docker
+# env:
+#   NODE_VERSION: '22.x'
+#   # REGISTRY: ghcr.io  # Comentado - não usando Docker
+#   # IMAGE_NAME: ${{ github.repository }}  # Comentado - não usando Docker
 
-jobs:
-  # 🔍 Análise de Qualidade e Segurança
-  quality-security:
-    name: 🔍 Quality & Security Analysis
-    runs-on: ubuntu-latest
-    outputs:
-      quality-status: ${{ steps.quality-check.outcome }}
-      security-status: ${{ steps.security-check.outcome }}
+# jobs:
+#   # 🔍 Análise de Qualidade e Segurança
+#   quality-security:
+#     name: 🔍 Quality & Security Analysis
+#     runs-on: ubuntu-latest
+#     outputs:
+#       quality-status: ${{ steps.quality-check.outcome }}
+#       security-status: ${{ steps.security-check.outcome }}
     
-    steps:
-    - name: 📥 Checkout código
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Para análise de commits
+#     steps:
+#     - name: 📥 Checkout código
+#       uses: actions/checkout@v4
+#       with:
+#         fetch-depth: 0  # Para análise de commits
 
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: package-lock.json
+#     - name: 🟢 Setup Node.js
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: ${{ env.NODE_VERSION }}
+#         cache: 'npm'
+#         cache-dependency-path: package-lock.json
 
-    - name: 📦 Install dependencies
-      run: npm ci --prefer-offline --no-audit
+#     - name: 📦 Install dependencies
+#       run: npm ci --prefer-offline --no-audit
 
-    - name: 🔒 Security audit
-      id: security-check
-      run: |
-        echo "🔍 Verificando vulnerabilidades..."
-        npm audit --audit-level=moderate --json > audit-results.json || true
-        npm audit --audit-level=moderate || echo "⚠️ Vulnerabilidades encontradas"
-      continue-on-error: true
+#     - name: 🔒 Security audit
+#       id: security-check
+#       run: |
+#         echo "🔍 Verificando vulnerabilidades..."
+#         npm audit --audit-level=moderate --json > audit-results.json || true
+#         npm audit --audit-level=moderate || echo "⚠️ Vulnerabilidades encontradas"
+#       continue-on-error: true
 
-    - name: 🧹 Code quality analysis
-      id: quality-check
-      run: |
-        echo "🔍 Executando análise de qualidade..."
-        npm run lint
-        npm run format -- --check
-        npx tsc --noEmit
-        echo "✅ Análise de qualidade concluída"
+#     - name: 🧹 Code quality analysis
+#       id: quality-check
+#       run: |
+#         echo "🔍 Executando análise de qualidade..."
+#         npm run lint
+#         npm run format -- --check
+#         npx tsc --noEmit
+#         echo "✅ Análise de qualidade concluída"
 
-    - name: 📊 Dependency analysis
-      run: |
-        echo "📊 Analisando dependências..."
-        npx npm-check-updates --format group
-        echo "📈 Dependências desatualizadas:"
-        npx outdated || echo "✅ Todas as dependências estão atualizadas"
+#     - name: 📊 Dependency analysis
+#       run: |
+#         echo "📊 Analisando dependências..."
+#         npx npm-check-updates --format group
+#         echo "📈 Dependências desatualizadas:"
+#         npx outdated || echo "✅ Todas as dependências estão atualizadas"
 
-    - name: 📝 Commit message validation
-      run: |
-        echo "📝 Validando mensagens de commit..."
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
-          echo "✅ Pull request - validação de commit não necessária"
-        else
-          echo "🔍 Validando commits..."
-          # Validação básica de mensagens de commit
-          git log --oneline -n 5 | while read line; do
-            if [[ ! $line =~ ^[a-f0-9]{7} ]]; then
-              echo "❌ Commit inválido: $line"
-              exit 1
-            fi
-          done
-        fi
+#     - name: 📝 Commit message validation
+#       run: |
+#         echo "📝 Validando mensagens de commit..."
+#         if [ "${{ github.event_name }}" = "pull_request" ]; then
+#           echo "✅ Pull request - validação de commit não necessária"
+#         else
+#           echo "🔍 Validando commits..."
+#           # Validação básica de mensagens de commit
+#           git log --oneline -n 5 | while read line; do
+#             if [[ ! $line =~ ^[a-f0-9]{7} ]]; then
+#               echo "❌ Commit inválido: $line"
+#               exit 1
+#             fi
+#           done
+#         fi
 
-    - name: 🚨 Upload security results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: security-audit-results
-        path: audit-results.json
-        retention-days: 30
+#     - name: 🚨 Upload security results
+#       uses: actions/upload-artifact@v4
+#       if: always()
+#       with:
+#         name: security-audit-results
+#         path: audit-results.json
+#         retention-days: 30
 
-  # 🧪 Testes e Coverage
-  test:
-    name: 🧪 Comprehensive Testing
-    runs-on: ubuntu-latest
-    needs: quality-security
-    if: needs.quality-security.outputs.quality-status == 'success'
+#   # 🧪 Testes e Coverage
+#   test:
+#     name: 🧪 Comprehensive Testing
+#     runs-on: ubuntu-latest
+#     needs: quality-security
+#     if: needs.quality-security.outputs.quality-status == 'success'
     
-    strategy:
-      matrix:
-        node-version: [18.x, 22.x]
-        test-type: [unit, integration]
-      fail-fast: false
+#     strategy:
+#       matrix:
+#         node-version: [18.x, 22.x]
+#         test-type: [unit, integration]
+#       fail-fast: false
 
-    steps:
-    - name: 📥 Checkout código
-      uses: actions/checkout@v4
+#     steps:
+#     - name: 📥 Checkout código
+#       uses: actions/checkout@v4
 
-    - name: 🟢 Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+#     - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: ${{ matrix.node-version }}
+#         cache: 'npm'
 
-    - name: 📦 Install dependencies
-      run: npm ci --prefer-offline
+#     - name: 📦 Install dependencies
+#       run: npm ci --prefer-offline
 
-    - name: 🗄️ Setup test database
-      run: |
-        npx prisma generate
-        npx prisma db push
-      env:
-        DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
+#     - name: 🗄️ Setup test database
+#       run: |
+#         npx prisma generate
+#         npx prisma db push
+#       env:
+#         DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
 
-    - name: 🧪 Run unit tests
-      if: matrix.test-type == 'unit'
-      run: |
-        npm run test -- --coverage --maxWorkers=2
-      env:
-        DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
+#     - name: 🧪 Run unit tests
+#       if: matrix.test-type == 'unit'
+#       run: |
+#         npm run test -- --coverage --maxWorkers=2
+#       env:
+#         DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
 
-    - name: 🧪 Run integration tests
-      if: matrix.test-type == 'integration'
-      run: |
-        npm run test:e2e -- --coverage
-      env:
-        DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
+#     - name: 🧪 Run integration tests
+#       if: matrix.test-type == 'integration'
+#       run: |
+#         npm run test:e2e -- --coverage
+#       env:
+#         DATABASE_URL: "file:./test-${{ matrix.node-version }}.db"
 
-    - name: 📊 Upload coverage reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report-${{ matrix.node-version }}-${{ matrix.test-type }}
-        path: coverage/
-        retention-days: 30
+#     - name: 📊 Upload coverage reports
+#       uses: actions/upload-artifact@v4
+#       with:
+#         name: coverage-report-${{ matrix.node-version }}-${{ matrix.test-type }}
+#         path: coverage/
+#         retention-days: 30
 
-  # 🏗️ Build e Validação
-  build:
-    name: 🏗️ Build & Validation
-    runs-on: ubuntu-latest
-    needs: [quality-security, test]
-    if: needs.quality-security.outputs.quality-status == 'success'
+#   # 🏗️ Build e Validação
+#   build:
+#     name: 🏗️ Build & Validation
+#     runs-on: ubuntu-latest
+#     needs: [quality-security, test]
+#     if: needs.quality-security.outputs.quality-status == 'success'
     
-    outputs:
-      build-version: ${{ steps.version.outputs.version }}
-      build-hash: ${{ steps.hash.outputs.hash }}
+#     outputs:
+#       build-version: ${{ steps.version.outputs.version }}
+#       build-hash: ${{ steps.hash.outputs.hash }}
 
-    steps:
-    - name: 📥 Checkout código
-      uses: actions/checkout@v4
+#     steps:
+#     - name: 📥 Checkout código
+#       uses: actions/checkout@v4
 
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
+#     - name: 🟢 Setup Node.js
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: ${{ env.NODE_VERSION }}
+#         cache: 'npm'
 
-    - name: 📦 Install dependencies
-      run: npm ci --prefer-offline
+#     - name: 📦 Install dependencies
+#       run: npm ci --prefer-offline
 
-    - name: 🔧 Generate Prisma client
-      run: npx prisma generate
-      env:
-        DATABASE_URL: "file:./build-test.db"
+#     - name: 🔧 Generate Prisma client
+#       run: npx prisma generate
+#       env:
+#         DATABASE_URL: "file:./build-test.db"
 
-    - name: 🏗️ Build application
-      run: |
-        echo "🏗️ Iniciando build..."
-        npm run build
-        echo "✅ Build concluído"
+#     - name: 🏗️ Build application
+#       run: |
+#         echo "🏗️ Iniciando build..."
+#         npm run build
+#         echo "✅ Build concluído"
 
-    - name: 📋 Validate build artifacts
-      run: |
-        echo "📋 Validando artefatos do build..."
-        test -f dist/src/main.js && echo "✅ main.js encontrado" || exit 1
-        test -d dist/src/modules && echo "✅ módulos compilados" || exit 1
-        test -d dist/src/shared && echo "✅ shared compilado" || exit 1
+#     - name: 📋 Validate build artifacts
+#       run: |
+#         echo "📋 Validando artefatos do build..."
+#         test -f dist/src/main.js && echo "✅ main.js encontrado" || exit 1
+#         test -d dist/src/modules && echo "✅ módulos compilados" || exit 1
+#         test -d dist/src/shared && echo "✅ shared compilado" || exit 1
         
-        echo "📊 Estatísticas do build:"
-        find dist/ -name "*.js" | wc -l | xargs echo "Arquivos JS:"
-        du -sh dist/ | xargs echo "Tamanho total:"
+#         echo "📊 Estatísticas do build:"
+#         find dist/ -name "*.js" | wc -l | xargs echo "Arquivos JS:"
+#         du -sh dist/ | xargs echo "Tamanho total:"
         
-        echo "🔍 Verificando imports:"
-        grep -r "import\|require" dist/src/ | wc -l | xargs echo "Imports encontrados:"
+#         echo "🔍 Verificando imports:"
+#         grep -r "import\|require" dist/src/ | wc -l | xargs echo "Imports encontrados:"
 
-    - name: 🏷️ Generate version info
-      id: version
-      run: |
-        echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-        echo "✅ Versão: $(node -p "require('./package.json').version")"
+#     - name: 🏷️ Generate version info
+#       id: version
+#       run: |
+#         echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+#         echo "✅ Versão: $(node -p "require('./package.json').version")"
 
-    - name: 🔑 Generate build hash
-      id: hash
-      run: |
-        echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        echo "✅ Hash: $(git rev-parse --short HEAD)"
+#     - name: 🔑 Generate build hash
+#       id: hash
+#       run: |
+#         echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+#         echo "✅ Hash: $(git rev-parse --short HEAD)"
 
-    - name: 📦 Create build artifact
-      run: |
-        tar -czf build-artifact.tar.gz dist/ package.json package-lock.json
-        echo "📦 Artefato criado: build-artifact.tar.gz"
+#     - name: 📦 Create build artifact
+#       run: |
+#         tar -czf build-artifact.tar.gz dist/ package.json package-lock.json
+#         echo "📦 Artefato criado: build-artifact.tar.gz"
 
-    - name: 🚀 Upload build artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-artifact-${{ steps.hash.outputs.hash }}
-        path: build-artifact.tar.gz
-        retention-days: 90
+#     - name: 🚀 Upload build artifact
+#       uses: actions/upload-artifact@v4
+#       with:
+#         name: build-artifact-${{ steps.hash.outputs.hash }}
+#         path: build-artifact.tar.gz
+#         retention-days: 90
 
-  # 🐳 CONTAINER BUILD - COMENTADO (não necessário para este projeto)
-  # container:
-  #   name: 🐳 Container Build
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-  #   
-  #   steps:
-  #   - name: 📥 Checkout código
-  #     uses: actions/checkout@v4
+#   # 🐳 CONTAINER BUILD - COMENTADO (não necessário para este projeto)
+#   # container:
+#   #   name: 🐳 Container Build
+#   #   runs-on: ubuntu-latest
+#   #   needs: build
+#   #   if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+#   #   
+#   #   steps:
+#   #   - name: 📥 Checkout código
+#   #     uses: actions/checkout@v4
 
-  #   - name: 🐳 Set up Docker Buildx
-  #     uses: docker/setup-buildx-action@v3
+#   #   - name: 🐳 Set up Docker Buildx
+#   #     uses: docker/setup-buildx-action@v3
 
-  #   - name: 🔐 Login to Container Registry
-  #     uses: docker/login-action@v3
-  #     with:
-  #       registry: ${{ env.REGISTRY }}
-  #       username: ${{ github.actor }}
-  #       password: ${{ secrets.GITHUB_TOKEN }}
+#   #   - name: 🔐 Login to Container Registry
+#   #     uses: docker/login-action@v3
+#   #     with:
+#   #       registry: ${{ env.REGISTRY }}
+#   #       username: ${{ github.actor }}
+#   #       password: ${{ secrets.GITHUB_TOKEN }}
 
-  #   - name: 📦 Download build artifact
-  #     uses: actions/download-artifact@v4
-  #     with:
-  #       name: build-artifact-${{ needs.build.outputs.build-hash }}
-  #       path: ./dist
+#   #   - name: 📦 Download build artifact
+#   #     uses: actions/download-artifact@v4
+#   #     with:
+#   #       name: build-artifact-${{ needs.build.outputs.build-hash }}
+#   #       path: ./dist
 
-  #   - name: 🏷️ Extract metadata
-  #     id: meta
-  #     uses: docker/metadata-action@v5
-  #     with:
-  #       images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-  #       tags: |
-  #         type=ref,event=branch
-  #         type=ref,event=pr
-  #         type=sha,prefix={{branch}}-
-  #         type=raw,value=latest,enable={{is_default_branch}}
+#   #   - name: 🏷️ Extract metadata
+#   #     id: meta
+#   #     uses: docker/metadata-action@v5
+#   #     with:
+#   #       images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+#   #       tags: |
+#   #         type=ref,event=branch
+#   #         type=ref,event=pr
+#   #         type=sha,prefix={{branch}}-
+#   #         type=raw,value=latest,enable={{is_default_branch}}
 
-  #   - name: 🐳 Build and push Docker image
-  #     uses: docker/build-push-action@v5
-  #     with:
-  #       context: .
-  #       push: true
-  #       tags: ${{ steps.meta.outputs.tags }}
-  #       labels: ${{ steps.meta.outputs.labels }}
-  #       cache-from: type=gha
-  #       cache-to: type=gha,mode=max
+#   #   - name: 🐳 Build and push Docker image
+#   #     uses: docker/build-push-action@v5
+#   #     with:
+#   #       context: .
+#   #       push: true
+#   #       tags: ${{ steps.meta.outputs.tags }}
+#   #       labels: ${{ steps.meta.outputs.labels }}
+#   #       cache-from: type=gha
+#   #       cache-to: type=gha,mode=max
 
-  # 📊 Coverage Report
-  coverage:
-    name: 📊 Coverage Analysis
-    runs-on: ubuntu-latest
-    needs: test
-    if: always()
+#   # 📊 Coverage Report
+#   coverage:
+#     name: 📊 Coverage Analysis
+#     runs-on: ubuntu-latest
+#     needs: test
+#     if: always()
     
-    steps:
-    - name: 📥 Checkout código
-      uses: actions/checkout@v4
+#     steps:
+#     - name: 📥 Checkout código
+#       uses: actions/checkout@v4
 
-    - name: 📊 Download coverage reports
-      uses: actions/download-artifact@v4
-      with:
-        pattern: coverage-report-*
-        path: coverage-reports/
+#     - name: 📊 Download coverage reports
+#       uses: actions/download-artifact@v4
+#       with:
+#         pattern: coverage-report-*
+#         path: coverage-reports/
 
-    - name: 📈 Generate coverage summary
-      run: |
-        echo "📊 Relatório de Coverage:"
-        find coverage-reports/ -name "lcov.info" -exec echo "Arquivo encontrado: {}" \;
-        echo "✅ Relatório de coverage gerado"
+#     - name: 📈 Generate coverage summary
+#       run: |
+#         echo "📊 Relatório de Coverage:"
+#         find coverage-reports/ -name "lcov.info" -exec echo "Arquivo encontrado: {}" \;
+#         echo "✅ Relatório de coverage gerado"
 
-    - name: 🚀 Upload to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage-reports/*/lcov.info
-        flags: unittests,integration
-        name: codecov-umbrella
-        fail_ci_if_error: false
-        verbose: true
+#     - name: 🚀 Upload to Codecov
+#       uses: codecov/codecov-action@v3
+#       with:
+#         file: ./coverage-reports/*/lcov.info
+#         flags: unittests,integration
+#         name: codecov-umbrella
+#         fail_ci_if_error: false
+#         verbose: true
 
-  # 🚨 Notifications
-  notify:
-    name: 🚨 Notifications
-    runs-on: ubuntu-latest
-    needs: [quality-security, test, build]
-    if: always()
+#   # 🚨 Notifications
+#   notify:
+#     name: 🚨 Notifications
+#     runs-on: ubuntu-latest
+#     needs: [quality-security, test, build]
+#     if: always()
     
-    steps:
-    - name: 📢 Success notification
-      if: needs.quality-security.outputs.quality-status == 'success' && needs.test.result == 'success' && needs.build.result == 'success'
-      run: |
-        echo "🎉 Pipeline executado com sucesso!"
-        echo "✅ Qualidade: Aprovada"
-        echo "✅ Testes: Aprovados"
-        echo "✅ Build: Aprovado"
+#     steps:
+#     - name: 📢 Success notification
+#       if: needs.quality-security.outputs.quality-status == 'success' && needs.test.result == 'success' && needs.build.result == 'success'
+#       run: |
+#         echo "🎉 Pipeline executado com sucesso!"
+#         echo "✅ Qualidade: Aprovada"
+#         echo "✅ Testes: Aprovados"
+#         echo "✅ Build: Aprovado"
 
-    - name: 🚨 Failure notification
-      if: needs.quality-security.outputs.quality-status == 'failure' || needs.test.result == 'failure' || needs.build.result == 'failure'
-      run: |
-        echo "❌ Pipeline falhou!"
-        echo "🔍 Verifique os logs para mais detalhes"
-        exit 1
+#     - name: 🚨 Failure notification
+#       if: needs.quality-security.outputs.quality-status == 'failure' || needs.test.result == 'failure' || needs.build.result == 'failure'
+#       run: |
+#         echo "❌ Pipeline falhou!"
+#         echo "🔍 Verifique os logs para mais detalhes"
+#         exit 1

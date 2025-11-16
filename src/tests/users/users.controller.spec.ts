@@ -37,6 +37,7 @@ describe('UsersController', () => {
           id: 1,
           email: 'test@test.com',
           name: 'Test User',
+          password: 'abcdefghi',
           createdAt: new Date(),
         },
       ];
